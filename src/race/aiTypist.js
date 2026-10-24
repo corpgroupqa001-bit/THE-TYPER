@@ -34,8 +34,10 @@ export function createAITypist(){
     _carry: 0, _stall: 0, _rand: Math.random, _phases: [0,0,0],
   };
 
-  ai.configure = ({ level='medium', length, seed=Date.now(), accuracy } = {})=>{
-    ai.level = AI_LEVELS[level] || AI_LEVELS.medium;
+  // `profile` ({ label, wpm:[lo,hi], accuracy }) lets callers such as the
+  // campaign define opponents beyond the four preset levels.
+  ai.configure = ({ level='medium', profile, length, seed=Date.now(), accuracy } = {})=>{
+    ai.level = profile || AI_LEVELS[level] || AI_LEVELS.medium;
     ai.length = Math.max(1, length|0);
     ai.seed = seed>>>0;
     ai.accuracyTarget = accuracy ?? ai.level.accuracy;

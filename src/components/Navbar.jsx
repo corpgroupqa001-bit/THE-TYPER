@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { Keyboard, Bike, LayoutDashboard, Trophy, Settings, LogOut, LogIn, Menu, X, Sun, Moon, ChevronDown, User } from 'lucide-react';
+import { Keyboard, Bike, Flag, LayoutDashboard, Trophy, Settings, LogOut, LogIn, Menu, X, Sun, Moon, ChevronDown, User } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import SoundToggle from './SoundToggle';
@@ -9,6 +9,7 @@ import Logo from './Logo';
 const LINKS = [
   { to:'/typing', label:'Typing Test', icon:Keyboard },
   { to:'/racing', label:'3D Race', icon:Bike },
+  { to:'/campaign', label:'Campaign', icon:Flag },
   { to:'/dashboard', label:'Dashboard', icon:LayoutDashboard },
   { to:'/leaderboard', label:'Leaderboard', icon:Trophy },
 ];

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-import { Keyboard, Bike, Trophy, Target, Gauge, Flame, TrendingUp, TrendingDown, Minus, Cpu } from 'lucide-react';
+import { Keyboard, Bike, Flag, Trophy, Target, Gauge, Flame, TrendingUp, TrendingDown, Minus, Cpu } from 'lucide-react';
 import { loadHistory } from '../utils/storage';
 import { useAuth } from '../context/AuthContext';
 
@@ -12,6 +12,7 @@ const dayKey = (t)=> new Date(t).toDateString();
 const avg = (arr, f)=> arr.length ? Math.round(arr.reduce((s,r)=> s+f(r), 0)/arr.length) : 0;
 
 function sessionType(r){
+  if(r.campaign) return { label:`Campaign · Level ${r.campaign.level}`, icon:Flag };
   if(r.duel) return { label:`Race vs AI · ${cap(r.opponent?.level)}`, icon:Cpu };
   if(r.race) return { label:'3D Race', icon:Bike };
   return { label:'Typing Test', icon:Keyboard };

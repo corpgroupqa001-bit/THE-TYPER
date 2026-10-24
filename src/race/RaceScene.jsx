@@ -16,13 +16,13 @@ function EngineTicker({ engine, opponent }){
   return null;
 }
 
-function Racers({ engine, opponent, reducedMotion, tags }){
+function Racers({ engine, opponent, reducedMotion, tags, aiLivery }){
   const placements = useDuelPlacements(opponent, reducedMotion);
   return (
     <>
       <PlayerMotorcycle engine={engine} reducedMotion={reducedMotion} duel={!!opponent} placement={placements.player} rootRef={tags.playerObj} />
       {opponent && <>
-        <AIMotorcycle opponent={opponent} reducedMotion={reducedMotion} placement={placements.ai} rootRef={tags.aiObj} />
+        <AIMotorcycle opponent={opponent} reducedMotion={reducedMotion} placement={placements.ai} rootRef={tags.aiObj} {...aiLivery} />
         <TagProjector targets={[{ obj:tags.playerObj, el:tags.playerEl }, { obj:tags.aiObj, el:tags.aiEl }]} />
       </>}
     </>
@@ -54,7 +54,11 @@ class SceneBoundary extends Component {
   render(){ return this.state.error ? this.props.fallback : this.props.children; }
 }
 
-export default function RaceScene({ engine, opponent, aiLabel, phase, quality='high', reducedMotion=false }){
+/*
+ * theme (optional): { sky:{top,mid,horizon,glow}, fog, edges:[left,right] } — per-track colours.
+ * aiLivery (optional): { paint, accent } for the opponent's bike.
+ */
+export default function RaceScene({ engine, opponent, aiLabel, aiLivery, theme, phase, quality='high', reducedMotion=false }){
   const [lost, setLost] = useState(false);
   const tags = useTagRefs();
   const cleanup = useRef(null);
@@ -88,11 +92,11 @@ export default function RaceScene({ engine, opponent, aiLabel, phase, quality='h
         }}
       >
         <color attach="background" args={['#04050d']} />
-        <fog attach="fog" args={['#0b0820', high ? 30 : 20, high ? 300 : 210]} />
+        <fog attach="fog" args={[theme?.fog || '#0b0820', high ? 30 : 20, high ? 300 : 210]} />
         <EngineTicker engine={engine} opponent={opponent} />
         <Lights quality={quality} />
-        <RaceTrack engine={engine} quality={quality} />
-        <Racers engine={engine} opponent={opponent} reducedMotion={reducedMotion} tags={tags} />
+        <RaceTrack engine={engine} quality={quality} theme={theme} />
+        <Racers engine={engine} opponent={opponent} reducedMotion={reducedMotion} tags={tags} aiLivery={aiLivery} />
         {!reducedMotion && <SpeedStreaks engine={engine} />}
         <RaceCamera engine={engine} opponent={opponent} phase={phase} reducedMotion={reducedMotion} />
         {high && (

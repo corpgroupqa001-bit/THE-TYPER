@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useRef } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { MeshReflectorMaterial } from '@react-three/drei';
 import * as THREE from 'three';
@@ -47,7 +47,7 @@ function range(step, from=Z_NEAR, to=Z_FAR){
   return out;
 }
 
-function Road({ engine, quality }){
+function Road({ engine, quality, edges=['#22d3ee','#a855f7'] }){
   const asphalt = useDisposable(()=>{
     const t = makeAsphaltTexture();
     t.repeat.set(2, ROAD_LEN/8);
@@ -82,7 +82,7 @@ function Road({ engine, quality }){
       {[-1,1].map(side=>(
         <mesh key={side} rotation={[-Math.PI/2,0,0]} position={[side*(ROAD_HALF-0.4),0.012,ROAD_CENTER_Z]}>
           <planeGeometry args={[0.16, ROAD_LEN]} />
-          <meshBasicMaterial color={side<0 ? new THREE.Color('#22d3ee').multiplyScalar(1.6) : new THREE.Color('#a855f7').multiplyScalar(1.6)} toneMapped={false} />
+          <meshBasicMaterial color={new THREE.Color(side<0 ? edges[0] : edges[1]).multiplyScalar(1.6)} toneMapped={false} />
         </mesh>
       ))}
     </group>
@@ -277,7 +277,7 @@ function Skyline(){
   );
 }
 
-function Sky(){
+function Sky({ colors }){
   const mat = useDisposable(()=> new THREE.ShaderMaterial({
     side: THREE.BackSide, depthWrite:false, fog:false,
     uniforms:{
@@ -297,6 +297,11 @@ function Sky(){
         gl_FragColor = vec4(c, 1.0);
       }`,
   }),[]);
+  useEffect(()=>{
+    const c = { top:'#03040c', mid:'#120a35', horizon:'#5b1d6e', glow:'#0e7490', ...colors };
+    for(const k of ['top','mid','horizon','glow']) mat.uniforms[k].value.set(c[k]);
+  },[mat, colors]);
+
   return (
     <mesh material={mat} renderOrder={-1}>
       <sphereGeometry args={[480, 32, 16]} />
@@ -304,12 +309,12 @@ function Sky(){
   );
 }
 
-export default function RaceTrack({ engine, quality }){
+export default function RaceTrack({ engine, quality, theme }){
   return (
     <>
-      <Sky />
+      <Sky colors={theme?.sky} />
       <Skyline />
-      <Road engine={engine} quality={quality} />
+      <Road engine={engine} quality={quality} edges={theme?.edges} />
       <Roadside engine={engine} />
       <City engine={engine} quality={quality} />
     </>

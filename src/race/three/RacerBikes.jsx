@@ -14,12 +14,12 @@ export function PlayerMotorcycle({ engine, reducedMotion, duel, placement, rootR
   );
 }
 
-export function AIMotorcycle({ opponent, reducedMotion, placement, rootRef }){
+export function AIMotorcycle({ opponent, reducedMotion, placement, rootRef, paint='#b8320f', accent='#ff8a1f' }){
   return (
     <Motorcycle
       engine={opponent.engine} reducedMotion={reducedMotion} rootRef={rootRef}
       laneX={AI_LANE_X} weaveScale={0.35} placement={placement} headlightBeam={false}
-      paint="#b8320f" accent="#ff8a1f"
+      paint={paint} accent={accent}
     />
   );
 }

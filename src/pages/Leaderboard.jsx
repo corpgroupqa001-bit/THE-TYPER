@@ -4,33 +4,11 @@ import { Medal, Crown, Bike, Keyboard, Info, ArrowUp } from 'lucide-react';
 import Segmented from '../components/Segmented';
 import { loadHistory } from '../utils/storage';
 import { useAuth } from '../context/AuthContext';
-
-// Sample players so the board isn't empty in this frontend-only demo. Always labelled "Demo".
-const DEMO_PLAYERS = [
-  { name:'Nova', wpm:112, accuracy:98, tests:64 },
-  { name:'Cypher', wpm:108, accuracy:96, tests:51 },
-  { name:'Lumen', wpm:105, accuracy:97, tests:47 },
-  { name:'Vega', wpm:96, accuracy:95, tests:39 },
-  { name:'Orion', wpm:88, accuracy:94, tests:33 },
-  { name:'Iris', wpm:79, accuracy:96, tests:28 },
-  { name:'Atlas', wpm:71, accuracy:93, tests:22 },
-  { name:'Juno', wpm:63, accuracy:95, tests:17 },
-  { name:'Pixel', wpm:55, accuracy:91, tests:12 },
-  { name:'Echo', wpm:46, accuracy:92, tests:8 },
-].map(p=>({ ...p, id:'demo-'+p.name, demo:true }));
+import { buildRanking } from '../utils/leaderboard';
 
 const PERIODS = [{ id:'day', label:'Today' }, { id:'week', label:'This week' }, { id:'all', label:'All time' }];
 const KINDS = [{ id:'all', label:'All tests' }, { id:'typing', label:'Typing test' }, { id:'race', label:'3D race' }];
 const TOP = 10;
-
-function inPeriod(t, period){
-  if(period==='all') return true;
-  const start = new Date(); start.setHours(0,0,0,0);
-  if(period==='week') start.setDate(start.getDate()-6);
-  return t >= start.getTime();
-}
-
-const byScore = (a,b)=> b.wpm-a.wpm || b.accuracy-a.accuracy;
 
 function Avatar({ name, you }){
   return <span className={`lb-avatar ${you?'you':''}`}>{(name||'?')[0].toUpperCase()}</span>;
@@ -54,21 +32,8 @@ export default function Leaderboard(){
   const myId = user?.id || 'guest';
   const history = useMemo(()=> loadHistory(), []);
 
-  const ranking = useMemo(()=>{
-    // Best result per local player within the selected period and test type.
-    const map = new Map();
-    for(const h of history){
-      if(!inPeriod(h.date, period)) continue;
-      if(kind==='typing' && h.race) continue;
-      if(kind==='race' && !h.race) continue;
-      const id = h.userId || 'guest';
-      const cur = map.get(id);
-      const tests = (cur?.tests || 0) + 1;
-      if(!cur || byScore(h, cur) < 0) map.set(id, { id, name: id===myId ? (user?.name || 'Guest') : (h.userName || 'Guest'), wpm:h.wpm, accuracy:h.accuracy, tests, you: id===myId });
-      else cur.tests = tests;
-    }
-    return [...DEMO_PLAYERS, ...map.values()].sort(byScore).map((p,i)=>({ ...p, rank:i+1 }));
-  },[history, period, kind, myId, user?.name]);
+  const ranking = useMemo(()=> buildRanking(history, { period, kind, myId, myName:user?.name || 'Guest' }),
+    [history, period, kind, myId, user?.name]);
 
   const me = ranking.find(p=> p.you);
   const ahead = me && me.rank>1 ? ranking[me.rank-2] : null;

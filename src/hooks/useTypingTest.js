@@ -135,6 +135,7 @@ export function useTypingTest({ duration=60, timed=true, autoStart=true, onKeyst
       errorChars: cur.incorrectChars,
       totalTyped: cur.typed.length,
       keystrokes: cur.keys.total,
+      correctKeystrokes: cur.keys.correct,
       elapsedSeconds: Math.round(t*10)/10,
     };
   },[]);

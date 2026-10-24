@@ -1,0 +1,17 @@
+@keyframes float {0%{transform:translateY(0)}50%{transform:translateY(-8px)}100%{transform:translateY(0)}}
+@keyframes pulse-glow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.2)}}
+@keyframes gradient-shift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes count-up{from{opacity:.3}to{opacity:1}}
+.float{animation:float 6s ease-in-out infinite}
+.pulse-glow{animation:pulse-glow 3s ease-in-out infinite}
+.gradient-anim{background-size:200% 200%;animation:gradient-shift 10s ease infinite}
+.typing-caret{animation:blink 1s steps(2,start) infinite}
+@keyframes blink{50%{opacity:0}}
+.neon-border{position:relative}
+.neon-border::before{
+  content:"";position:absolute;inset:-1px;border-radius:inherit;
+  background:linear-gradient(90deg,var(--neon-cyan),var(--neon-purple),var(--neon-cyan));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;padding:1px;
+  filter:blur(6px);opacity:.6;
+}
